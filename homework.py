@@ -11,9 +11,9 @@ load_dotenv()
 logging.basicConfig(level=logging.ERROR,
                     format='%(asctime)s, %(levelname)s, %(name)s, %(message)s')
 
-PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN") 
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN') 
-CHAT_ID = os.getenv('TELEGRAM_CHAT_ID') 
+PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN")
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 
 def parse_homework_status(homework):
@@ -23,17 +23,19 @@ def parse_homework_status(homework):
         verdict = 'К сожалению в работе нашлись ошибки.'
     elif homework_name and homework_status == 'approved':
         verdict = ('Ревьюеру всё понравилось, '
-                   'можно приступать к следующему уроку.')    
+                   'можно приступать к следующему уроку.')
     else:
         return 'Неверный ответ сервера'
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
 def get_homework_statuses(current_timestamp):
+    if current_timestamp is None:
+        current_timestamp = int(time.time())
     homework_statuses = requests.get(
         'https://praktikum.yandex.ru/api/user_api/homework_statuses/',
         headers={'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'},
-        params={'from_date': current_timestamp}) # Константин, дай, пожалуйста, более подробный коммент :)
+        params={'from_date': current_timestamp})
     try:
         homework_statuses.raise_for_status()
     except requests.exceptions.HTTPError as error:
