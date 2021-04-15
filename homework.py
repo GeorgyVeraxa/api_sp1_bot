@@ -11,9 +11,9 @@ load_dotenv()
 logging.basicConfig(level=logging.ERROR,
                     format='%(asctime)s, %(levelname)s, %(name)s, %(message)s')
 
-PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN")
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+PRAKTIKUM_TOKEN = os.environ.get("PRAKTIKUM_TOKEN")
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
 
 def parse_homework_status(homework):
