@@ -18,9 +18,9 @@ logging.warning('Большая нагрузка, хелп')
 logging.error('Бот не смог отправить сообщение')  # Когда что-то сломалось
 logging.critical('Всё упало! Зовите админа!1!111')  # Когда всё совсем плохо
 
-PRAKTIKUM_TOKEN = os.environ("PRAKTIKUM_TOKEN")
-TELEGRAM_TOKEN = os.environ('TELEGRAM_TOKEN')
-CHAT_ID = os.environ('TELEGRAM_CHAT_ID')
+PRAKTIKUM_TOKEN = os.environ.get("PRAKTIKUM_TOKEN")
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
 
 def parse_homework_status(homework):
