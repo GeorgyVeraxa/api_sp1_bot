@@ -38,8 +38,8 @@ def get_homework_statuses(current_timestamp):
         params={'from_date': current_timestamp})
     try:
         homework_statuses.raise_for_status()
-    except requests.exceptions.HTTPError as error:
-        logging.error(error)
+    except Exception as e:
+        logging.error(e)
     return homework_statuses.json()
 
 
