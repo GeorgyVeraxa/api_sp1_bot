@@ -11,26 +11,21 @@ load_dotenv()
 logging.basicConfig(level=logging.ERROR,
                     format='%(asctime)s, %(levelname)s, %(name)s, %(message)s')
 
-logging.debug('123')  # Когда нужна отладочная информация
-logging.info('Сообщение отправлено')  # Когда нужна дополнительная информация
-# Когда что-то идёт не так, но работает
-logging.warning('Большая нагрузка, хелп')
-logging.error('Бот не смог отправить сообщение')  # Когда что-то сломалось
-logging.critical('Всё упало! Зовите админа!1!111')  # Когда всё совсем плохо
-
-PRAKTIKUM_TOKEN = os.environ.get("PRAKTIKUM_TOKEN")
-TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
-CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
+PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN") 
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN') 
+CHAT_ID = os.getenv('TELEGRAM_CHAT_ID') 
 
 
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
-    if homework_status == 'rejected':
+    if homework_name and homework_status == 'rejected':
         verdict = 'К сожалению в работе нашлись ошибки.'
-    else:
+    elif homework_name and homework_status == 'approved':
         verdict = ('Ревьюеру всё понравилось, '
-                   'можно приступать к следующему уроку.')
+                   'можно приступать к следующему уроку.')    
+    else:
+        return 'Неверный ответ сервера'
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
@@ -38,7 +33,11 @@ def get_homework_statuses(current_timestamp):
     homework_statuses = requests.get(
         'https://praktikum.yandex.ru/api/user_api/homework_statuses/',
         headers={'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'},
-        params={'from_date': current_timestamp})
+        params={'from_date': current_timestamp}) # Константин, дай, пожалуйста, более подробный коммент :)
+    try:
+        homework_statuses.raise_for_status()
+    except requests.exceptions.HTTPError as error:
+        logging.error(error)
     return homework_statuses.json()
 
 
@@ -47,8 +46,7 @@ def send_message(message, bot_client):
 
 
 def main():
-    Bot = telegram.Bot
-    bot_client = Bot(token=TELEGRAM_TOKEN)
+    bot_client = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())  # начальное значение timestamp
     while True:
         try:
@@ -58,10 +56,10 @@ def main():
                     new_homework.get('homeworks')[0]), bot_client)
             current_timestamp = new_homework.get(
                 'current_date', current_timestamp)  # обновить timestamp
-            time.sleep(1200)  # опрашивать раз в пять минут
+            time.sleep(1200)  # опрашивать раз в 20 минут
 
         except Exception as e:
-            print(f'Бот столкнулся с ошибкой: {e}')
+            logging.error(f'Бот столкнулся с ошибкой: {e}')
             time.sleep(5)
 
 
