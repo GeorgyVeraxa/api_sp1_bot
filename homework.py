@@ -35,11 +35,11 @@ def get_homework_statuses(current_timestamp):
     homework_statuses = requests.get(
         'https://praktikum.yandex.ru/api/user_api/homework_statuses/',
         headers={'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'},
-        params={'from_date': current_timestamp})
+        params={'from_date': 0})
     try:
         homework_statuses.raise_for_status()
-    except Exception as e:
-        logging.error(e)
+    except requests.exceptions.RequestException as e:
+        logging.error(f'Ошибка подключения {e}')
     return homework_statuses.json()
 
 
@@ -58,7 +58,7 @@ def main():
                     new_homework.get('homeworks')[0]), bot_client)
             current_timestamp = new_homework.get(
                 'current_date', current_timestamp)  # обновить timestamp
-            time.sleep(1200)  # опрашивать раз в 20 минут
+            time.sleep(10)  # опрашивать раз в 20 минут
 
         except Exception as e:
             logging.error(f'Бот столкнулся с ошибкой: {e}')
